@@ -12,7 +12,7 @@ const connectDB = require('./config/db.js')
 
 connectDB()
 
-// - CONTANTS
+// - CONSTANTS
 const { HTTP_STATUS } = require('./utils/constants.js')
 
 
@@ -23,6 +23,7 @@ const Airline = require('./models/Airline.js')
 // ===== IMG UPLOAD MULTER =======
 const storage = multer.memoryStorage()
 const upload = multer({ storage: storage })
+const uploadUpdate = multer()
 
 // AWS
 const s3Client = new S3Client({
@@ -37,6 +38,9 @@ const s3Client = new S3Client({
 
 const port = process.env.PORT || 5000
 const app  = express()
+
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); // Add this too just in case
 
 app.use(cors())
 
@@ -151,9 +155,41 @@ app.post('/v1/airlines/', upload.single('airline_img'),async (req,res) => {
 // Access
 // @desc
 
-app.put('/v1/airlines/update-airline',(req,res) => {
-    res.send('Update Airline')
-})
+app.put('/v1/airlines/update-airline/:id', uploadUpdate.any(), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateData = req.body; 
+
+        // This console log will now print your form-data fields perfectly!
+        console.log("Params ID:", id);
+        console.log("Form-Data Body:", updateData);
+
+        const updatedAirline = await Airline.findByIdAndUpdate(id, updateData, {
+            returnDocument: 'after',
+            runValidators: true
+        });
+
+        if (!updatedAirline) {
+            return res.status(404).json({
+                success: false,
+                message: `No airline found with ID: ${id}`
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Airline updated successfully via form-data",
+            data: updatedAirline
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Server Error",
+            error: error.message
+        });
+    }
+});
 
 
 // @route PUT /airlines/
