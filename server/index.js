@@ -46,8 +46,26 @@ app.use(cors())
 // Access
 // @desc
 
-app.get('/v1/airlines/',(req,res) => {
-    res.send('Airlines')
+app.get('/v1/airlines/',async (req,res) => {
+
+    try {
+        // .find() with an empty object {} fetches all records from the collection
+        const airlines = await Airline.find({});
+        
+        // Return the data with a 200 Success status
+        res.status(HTTP_STATUS.GET_SUCCESS).json({
+            success: true,
+            count: airlines.length,
+            data: airlines
+        });
+    } catch (error) {
+        // Handle any database connection or query errors safely
+        res.status(HTTP_STATUS.SERVER_ERROR).json({
+            success: false,
+            message: "Server Error: Could not retrieve airlines",
+            error: HTTP_STATUS.SERVER_ERROR
+        });
+    }
 })
 
 
