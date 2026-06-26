@@ -2,8 +2,18 @@ const express = require('express')
 require('dotenv').config()
 const multer  = require('multer')
 const path = require('path')
-
+const cors = require('cors')
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3')
+const connectDB = require('./config/db.js')
+
+connectDB()
+
+// - CONTANTS
+const { HTTP_STATUS } = require('./utils/constants.js')
+
+
+// --- MODELS
+const Airline = require('./models/Airline.js')
 
 
 // ===== IMG UPLOAD MULTER =======
@@ -23,6 +33,8 @@ const s3Client = new S3Client({
 
 const port = process.env.PORT || 5000
 const app  = express()
+
+app.use(cors())
 
 // ====== Airlines =======
 
@@ -47,7 +59,7 @@ app.post('/v1/airlines/', upload.single('airline_img'),async (req,res) => {
         // 1. Verify the file actually arrived
         // If the frontend forgot to attach it, or used the wrong key, we stop here.
         if (!req.file) {
-            return res.status(400).json({ message: "No image file uploaded." });
+            return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: "No image file uploaded." });
         }
 
         // 2. Generate the unique filename (The "Key")
@@ -76,18 +88,37 @@ app.post('/v1/airlines/', upload.single('airline_img'),async (req,res) => {
         // 6. Respond to the client!
         console.log("Success! Image URL:", s3Url);
         
-        // For now, we just send the URL back. 
-        // Soon, we will take this URL and save it to MongoDB alongside req.body!
-        res.status(200).json({ 
-        message: "Airline image uploaded successfully!", 
-        imageUrl: s3Url,
-        airlineData: req.body 
+        
+        // Save the Data to the DB
+        // if(s3Url.includes('https://flight-router-bucket')){
+
+        const newAirline = new Airline({
+                name: req.body.airline_name,
+                country: req.body.country, // Will default to 'Unknown' if not provided, based on your Schema
+                logoUrl: s3Url             // The magic URL!
+            });
+
+
+            // Save it to the database!
+        const savedAirline = await newAirline.save();
+
+        res.status(HTTP_STATUS.CREATE_SUCCESS).json({
+            message: "Airline successfully created!",
+            airline: savedAirline 
         });
+
+            // Get the DATA
+            // console.log(req.body.airline_name)
+            // console.log(req.body.country)
+
+
+        // }
+
         
     } catch (error) {
         // If AWS rejects the keys, the bucket name is wrong, or the network fails, it lands here.
     console.error("AWS Upload Error:", error);
-    res.status(500).json({ message: "Server error during upload to cloud." });
+    res.status(HTTP_STATUS.SERVER_ERROR).json({ message: "Server error during upload to cloud." });
     }
 
 })

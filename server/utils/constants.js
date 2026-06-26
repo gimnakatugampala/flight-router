@@ -1,0 +1,12 @@
+
+
+const HTTP_STATUS = {
+    GET_SUCCESS: 200,
+    CREATE_SUCCESS: 201,
+    NOT_FOUND: 404,
+    METHOD_NOT_ALLOWED: 405,
+    SERVER_ERROR: 500,
+    BAD_REQUEST: 400
+};
+
+module.exports = { HTTP_STATUS };
