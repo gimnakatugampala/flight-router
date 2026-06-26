@@ -108,7 +108,8 @@ app.post('/v1/airlines/', upload.single('airline_img'),async (req,res) => {
 
         res.status(HTTP_STATUS.CREATE_SUCCESS).json({
             message: "Airline successfully created!",
-            airline: savedAirline 
+            airline: savedAirline,
+            statusCode: HTTP_STATUS.CREATE_SUCCESS
         });
 
             // Get the DATA
