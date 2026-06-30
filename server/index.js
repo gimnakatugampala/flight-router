@@ -10,7 +10,7 @@ const cors = require('cors')
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3')
 const connectDB = require('./config/db.js')
 
-const airlineRouter = require('./routes/airlines.js')
+const airlineRouter = require('./routes/airlinesRouter.js')
 
 connectDB()
 
