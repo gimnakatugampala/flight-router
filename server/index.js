@@ -52,7 +52,7 @@ app.use(cors())
 // Access
 // @desc
 
-app.get('/v1/airlines/',airlineRouter)
+app.use('/v1/airlines/',airlineRouter)
 
 // ====== Flights =======
 
