@@ -151,6 +151,7 @@ app.post('/v1/airlines/', upload.single('airline_img'),async (req,res) => {
 })
 
 
+
 // @route PUT /airlines/update-airline
 // Access
 // @desc
@@ -192,9 +193,10 @@ app.put('/v1/airlines/update-airline/:id', uploadUpdate.any(), async (req, res) 
 });
 
 
+
 // @route PUT /airlines/
 // Access
-// @desc
+// @desc - New 
 
 app.delete('/v1/airlines/',(req,res) => {
     res.send('Delete Airline')
