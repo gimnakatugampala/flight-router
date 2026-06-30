@@ -151,6 +151,7 @@ app.post('/v1/airlines/', upload.single('airline_img'),async (req,res) => {
 })
 
 
+
 // @route PUT /airlines/update-airline
 // Access
 // @desc
