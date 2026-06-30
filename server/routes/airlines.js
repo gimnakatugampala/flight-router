@@ -162,8 +162,39 @@ router.put('/update-airline/:id', uploadUpdate.any(), async (req, res) => {
 // Access
 // @desc - New 
 
-router.delete('/',(req,res) => {
-    res.send('Delete Airline')
+router.delete('/:id',async(req,res) => {
+    try {
+        const { id } = req.params;
+        console.log(id)
+
+        // Find the airline by ID and delete it from MongoDB
+        const deletedAirline = await Airline.findByIdAndDelete(id);
+
+        // If the airline does not exist, return a 404 Not Found error
+        if (!deletedAirline) {
+            return res.status(HTTP_STATUS.NOT_FOUND).json({
+                success: false,
+                message: `No airline found with ID: ${id}`
+            });
+        }
+
+        // Return a success message
+        res.status(HTTP_STATUS.GET_SUCCESS).json({
+            success: true,
+            message: "Airline deleted successfully",
+            data: {} // Conventionally, deleted data returns an empty object
+        });
+
+    } catch (error) {
+        console.error("Delete Airline Error:", error);
+        
+        // Handle invalid MongoDB IDs or other server errors
+        res.status(HTTP_STATUS.SERVER_ERROR).json({
+            success: false,
+            message: "Server Error: Could not delete airline",
+            error: error.message
+        });
+    }
 })
 
 
