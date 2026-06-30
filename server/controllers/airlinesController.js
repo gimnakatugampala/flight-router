@@ -1,5 +1,4 @@
-
-const express = require('express');
+const asyncHandler = require('express-async-handler')
 const Airline = require('../models/Airline');
 const { HTTP_STATUS } = require('../utils/constants');
 const multer  = require('multer')
@@ -10,14 +9,7 @@ const uploadUpdate = multer()
 
 
 
-
-const router = express.Router();
-
-// @route GET /airlines
-// Access
-// @desc
-
-router.get('/',async (req,res) => {
+const getAirlines = asyncHandler(async (req,res) => {
 
     try {
         // .find() with an empty object {} fetches all records from the collection
@@ -39,11 +31,7 @@ router.get('/',async (req,res) => {
     }
 })
 
-// @route POST /airlines/add-airline
-// Access
-// @desc
-
-router.post('/', upload.single('airline_img'),async (req,res) => {
+const createAirline = asyncHandler(async (req,res) => {
     // res.send('Add Airline')
     //   console.log(req.file, req.body)
     try {
@@ -116,12 +104,7 @@ router.post('/', upload.single('airline_img'),async (req,res) => {
 
 })
 
-
-// @route PUT /airlines/update-airline
-// Access
-// @desc
-
-router.put('/update-airline/:id', uploadUpdate.any(), async (req, res) => {
+const updateAirline =  asyncHandler(uploadUpdate.any(), async (req, res) => {
     try {
         const { id } = req.params;
         const updateData = req.body; 
@@ -158,11 +141,7 @@ router.put('/update-airline/:id', uploadUpdate.any(), async (req, res) => {
 });
 
 
-// @route PUT /airlines/
-// Access
-// @desc - New 
-
-router.delete('/:id',async(req,res) => {
+const deleteAirline =  asyncHandler(async(req,res) => {
     try {
         const { id } = req.params;
         console.log(id)
@@ -198,4 +177,9 @@ router.delete('/:id',async(req,res) => {
 })
 
 
-module.exports = router
+module.exports = {
+    getAirlines,
+    createAirline,
+    updateAirline,
+    deleteAirline
+}
