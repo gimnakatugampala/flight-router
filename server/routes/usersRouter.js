@@ -131,4 +131,73 @@ router.post('/login', upload.none(), async (req, res) => {
     }
 });
 
+
+// @route POST /v1/users/signup
+// Access Public
+// @desc Register a new customer
+
+router.post('/signup',upload.none(), async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+
+        // 1. Basic validation
+        if (!name || !email || !password) {
+            return res.status(HTTP_STATUS.BAD_REQUEST).json({
+                success: false,
+                message: "Please provide a name, email, and password."
+            });
+        }
+
+        // 2. Check if user already exists
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(HTTP_STATUS.BAD_REQUEST).json({
+                success: false,
+                message: "An account with this email already exists."
+            });
+        }
+
+        // 3. Create the user
+        // SECURITY: We explicitly hardcode the role to 'customer' here.
+        // We ignore any 'role' field the user might try to send in req.body.
+        const user = await User.create({
+            name,
+            email,
+            password,
+            role: 'customer' 
+        });
+
+        // 4. Generate the JWT (VIP Pass) so they are instantly logged in
+        const payload = {
+            id: user._id,
+            role: user.role
+        };
+
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {
+            expiresIn: '30d' 
+        });
+
+        // 5. Send the success response!
+        res.status(HTTP_STATUS.CREATE_SUCCESS).json({
+            success: true,
+            message: "Signup successful!",
+            token: token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
+
+    } catch (error) {
+        console.error("Signup Error:", error);
+        res.status(HTTP_STATUS.SERVER_ERROR).json({
+            success: false,
+            message: "Server Error during signup",
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;
