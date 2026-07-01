@@ -11,6 +11,7 @@ const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3')
 const connectDB = require('./config/db.js')
 
 const airlineRouter = require('./routes/airlinesRouter.js')
+const flightRouter = require('./routes/flightRouter.js')
 
 connectDB()
 
@@ -46,47 +47,14 @@ app.use(express.urlencoded({ extended: true })); // Add this too just in case
 
 app.use(cors())
 
-// ====== Airlines =======
 
-// @route GET /airlines
-// Access
-// @desc
 
 app.use('/v1/airlines/',airlineRouter)
+app.use('/v1/flights/',flightRouter)
 
-// ====== Flights =======
 
-// @route GET /flights
-// Access
-// @desc
 
-app.get('/v1/flights/',(req,res) => {
-    res.send('Flights')
-})
 
-// @route POST /flights/add-flight
-// Access
-// @desc
-
-app.post('/v1/flights/add-flight',(req,res) => {
-    res.send('Add Flight')
-})
-
-// @route PUT /flights/update-flight
-// Access
-// @desc
-
-app.put('/v1/flights/update-flight',(req,res) => {
-    res.send('Update Flight')
-})
-
-// @route DELETE /flights
-// Access
-// @desc
-
-app.delete('/v1/flights/',(req,res) => {
-    res.send('Delete Flight')
-})
 
 
 
