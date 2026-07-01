@@ -40,6 +40,14 @@ const flightSchema = new mongoose.Schema(
       type: String,
       enum: ['Scheduled', 'Delayed', 'In Air', 'Landed', 'Cancelled'], // Restricts the allowed values
       default: 'Scheduled'
+    },
+    capacity: {
+      type: Number,
+      default: 20 // Hardcoded to 20 seats per flight as requested
+    },
+    bookedSeats: {
+      type: Number,
+      default: 0 // Starts at 0 when a new flight is created
     }
   },
   {
