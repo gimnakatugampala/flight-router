@@ -12,6 +12,7 @@ const connectDB = require('./config/db.js')
 
 const airlineRouter = require('./routes/airlinesRouter.js')
 const flightRouter = require('./routes/flightRouter.js')
+const userRouter = require('./routes/usersRouter.js'); 
 
 connectDB()
 
@@ -51,6 +52,7 @@ app.use(cors())
 
 app.use('/v1/airlines/',airlineRouter)
 app.use('/v1/flights/',flightRouter)
+app.use('/v1/users/',userRouter)
 
 
 
