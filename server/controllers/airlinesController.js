@@ -2,10 +2,22 @@ const asyncHandler = require('express-async-handler')
 const Airline = require('../models/Airline');
 const { HTTP_STATUS } = require('../utils/constants');
 const multer  = require('multer')
+const path = require('path')
+const cors = require('cors')
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3')
 const storage = multer.memoryStorage()
 const upload = multer({ storage: storage })
 const uploadUpdate = multer()
+
+// AWS
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  }
+})
+
 
 
 
