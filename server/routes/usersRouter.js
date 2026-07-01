@@ -12,7 +12,7 @@ const router = express.Router();
 // Access Admin (We will add auth middleware later)
 // @desc Create a new user (Staff or Customer)
 
-router.post('/', upload.none(),async (req, res) => {
+router.post('/', protect, authorize('admin'), upload.none(),async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
 
